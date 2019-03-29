@@ -20,9 +20,6 @@ import java.net.HttpURLConnection._
 
 import com.amazonaws.services.lambda.runtime.events.{APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent}
 import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger}
-
-import io.github.mkotsur.aws.handler.Lambda._
-
 import org.mockito.Mockito.when
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
