@@ -21,13 +21,14 @@ import java.net.HttpURLConnection._
 import com.amazonaws.services.lambda.runtime.events.{APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent}
 import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger}
 import io.github.mkotsur.aws.handler.Lambda
+import io.github.mkotsur.aws.handler.Lambda._
 
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
-trait ProxiedRequestHandler extends Lambda[String, String] with JsonMapper {
+abstract class ProxiedRequestHandler extends Lambda[String, String] with JsonMapper {
 
-  override def handle(input: String, context: Context): Either[Nothing, String] = {
+  override final def handle(input: String, context: Context): Either[Nothing, String] = {
     val logger: LambdaLogger = context.getLogger
     logger.log(s"Input: $input")
 
@@ -37,7 +38,7 @@ trait ProxiedRequestHandler extends Lambda[String, String] with JsonMapper {
     }
   }
 
-  def recovery: PartialFunction[Throwable, Either[Nothing, String]] = {
+  private def recovery: PartialFunction[Throwable, Either[Nothing, String]] = {
     case e: Throwable => Right(toJson(new APIGatewayProxyResponseEvent().withStatusCode(HTTP_INTERNAL_ERROR).withBody(e.getMessage)))
   }
 
