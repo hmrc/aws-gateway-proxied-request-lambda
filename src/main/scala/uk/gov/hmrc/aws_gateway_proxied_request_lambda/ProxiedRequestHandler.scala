@@ -34,13 +34,15 @@ abstract class ProxiedRequestHandler extends Lambda[String, String] with JsonMap
 
     Try(fromJson[APIGatewayProxyRequestEvent](input)) match {
       case Failure(e) => Right(toJson(new APIGatewayProxyResponseEvent().withStatusCode(HTTP_BAD_REQUEST).withBody(e.getMessage)))
-      case Success(value) => Try(Right(toJson(handleInput(value)))) recover recovery get
+      case Success(value) => Try(Right(toJson(handleInput(value, context)))) recover recovery get
     }
   }
 
   private def recovery: PartialFunction[Throwable, Either[Nothing, String]] = {
     case e: Throwable => Right(toJson(new APIGatewayProxyResponseEvent().withStatusCode(HTTP_INTERNAL_ERROR).withBody(e.getMessage)))
   }
+
+  protected def handleInput(input: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent = handleInput(input)
 
   protected def handleInput(input: APIGatewayProxyRequestEvent): APIGatewayProxyResponseEvent
 
