@@ -44,6 +44,6 @@ abstract class ProxiedRequestHandler extends Lambda[String, String] with JsonMap
 
   protected def handleInput(input: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent = handleInput(input)
 
-  protected def handleInput(input: APIGatewayProxyRequestEvent): APIGatewayProxyResponseEvent
+  protected def handleInput(input: APIGatewayProxyRequestEvent): APIGatewayProxyResponseEvent = ???
 
 }
