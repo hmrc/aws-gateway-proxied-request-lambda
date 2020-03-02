@@ -28,12 +28,11 @@ lazy val testDependencies = Seq(
 lazy val library = (project in file("."))
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
   .settings(
-    scalaVersion := "2.11.11",
+    scalaVersion := "2.12.10",
     name := appName,
     majorVersion := 0,
     makePublicallyAvailableOnBintray := true,
     targetJvm := "jvm-1.8",
-    crossScalaVersions := Seq("2.11.11"),
     scalacOptions += "-Ypartial-unification",
     libraryDependencies ++= appDependencies,
     resolvers := Seq(
