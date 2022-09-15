@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,13 @@ import scala.util.{Failure, Success, Try}
 abstract class ProxiedRequestHandler extends Lambda[String, String] with JsonMapper {
 
   override final def handle(input: String, context: Context): Either[Nothing, String] = {
-    val logger: LambdaLogger = context.getLogger
-    logger.log(s"Input: $input")
-
     Try(fromJson[APIGatewayProxyRequestEvent](input)) match {
       case Failure(e) => Right(toJson(new APIGatewayProxyResponseEvent().withStatusCode(HTTP_BAD_REQUEST).withBody(e.getMessage)))
-      case Success(value) => Try(Right(toJson(handleInput(value, context)))) recover recovery get
+      case Success(value) => {
+        val logger: LambdaLogger = context.getLogger
+        logger.log(s"Request body: ${value.getBody()}")
+        Try(Right(toJson(handleInput(value, context)))) recover recovery get
+      }
     }
   }
 
