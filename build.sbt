@@ -1,8 +1,7 @@
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.targetJvm
-import uk.gov.hmrc.SbtArtifactory.autoImport.makePublicallyAvailableOnBintray
-import uk.gov.hmrc.{SbtArtifactory, SbtAutoBuildPlugin}
+import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -31,13 +30,10 @@ lazy val library = (project in file("."))
     scalaVersion := "2.12.10",
     name := appName,
     majorVersion := 0,
-    makePublicallyAvailableOnBintray := true,
+    isPublicArtefact := true,
     targetJvm := "jvm-1.8",
     scalacOptions += "-Ypartial-unification",
-    libraryDependencies ++= appDependencies,
-    resolvers := Seq(
-      Resolver.bintrayRepo("hmrc", "releases")
-    )
+    libraryDependencies ++= appDependencies
   )
 
 // Coverage configuration
