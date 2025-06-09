@@ -24,6 +24,7 @@ yarn-error.log
 .bloop/
 .metals/
 .vscode/
+.bsp/
 project/.bloop/
 project/metals.sbt
     

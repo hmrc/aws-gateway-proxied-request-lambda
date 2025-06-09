@@ -19,7 +19,7 @@ package uk.gov.hmrc.aws_gateway_proxied_request_lambda
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 
 trait JsonMapper {
   val mapper = new ObjectMapper() with ScalaObjectMapper

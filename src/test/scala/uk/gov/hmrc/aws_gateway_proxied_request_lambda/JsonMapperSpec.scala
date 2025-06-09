@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.aws_gateway_proxied_request_lambda
 
-import org.scalatest._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class JsonMapperSpec extends WordSpecLike with Matchers {
+class JsonMapperSpec extends AnyWordSpec with Matchers {
 
   trait Setup {
     val underTest: JsonMapper = new JsonMapper{}
