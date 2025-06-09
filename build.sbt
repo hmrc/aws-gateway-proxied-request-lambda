@@ -22,7 +22,6 @@ lazy val testDependencies = Seq(
 ).map(_ % Test)
 
 lazy val library = (project in file("."))
-  // .enablePlugins(SbtArtifactory)
   .settings(
     scalaVersion := "2.13.16",
     name := appName,
