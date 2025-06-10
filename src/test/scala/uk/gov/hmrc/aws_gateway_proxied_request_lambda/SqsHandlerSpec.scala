@@ -21,11 +21,13 @@ import java.net.HttpURLConnection._
 import com.amazonaws.services.lambda.runtime.events.SQSEvent
 import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger}
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import org.mockito.Mockito.when
-import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 
-class SqsHandlerSpec extends WordSpecLike with Matchers with MockitoSugar with JsonMapper {
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.EitherValues
+
+class SqsHandlerSpec extends AnyWordSpec with Matchers with MockitoSugar with JsonMapper with EitherValues {
 
   trait Setup {
     val mockContext: Context = mock[Context]
@@ -59,8 +61,6 @@ class SqsHandlerSpec extends WordSpecLike with Matchers with MockitoSugar with J
       val result: Either[Nothing, Unit] = sqsRequestHandler.handle(validInput, mockContext)
 
       result.isRight shouldEqual true
-      val Right(resultValue) = result
-      resultValue.isInstanceOf[Unit] shouldEqual true
     }
 
     "throw exception from the handleInput method if input is invalid" in new Setup {

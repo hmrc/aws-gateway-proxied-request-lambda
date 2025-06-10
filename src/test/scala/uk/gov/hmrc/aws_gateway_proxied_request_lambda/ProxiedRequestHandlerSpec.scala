@@ -20,16 +20,17 @@ import java.net.HttpURLConnection._
 
 import com.amazonaws.services.lambda.runtime.events.{APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent}
 import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger}
-import org.mockito.Mockito.when
-import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.mockito.scalatest.MockitoSugar
 
-class ProxiedRequestHandlerSpec extends WordSpecLike with Matchers with MockitoSugar with JsonMapper {
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.EitherValues
+
+class ProxiedRequestHandlerSpec extends AnyWordSpec with Matchers with MockitoSugar with JsonMapper with EitherValues {
 
   trait Setup {
-    val mockContext: Context = mock[Context]
-    when(mockContext.getLogger).thenReturn(mock[LambdaLogger])
-
+    val mockContext = mock[Context]
+  
     val expectedStatusCode: Int = HTTP_OK
     val expectedResponseBody = """{"foo": "bar"}"""
     val proxiedRequestHandler: ProxiedRequestHandler = new ProxiedRequestHandler {
@@ -53,12 +54,20 @@ class ProxiedRequestHandlerSpec extends WordSpecLike with Matchers with MockitoS
     val invalidInput: String = ""
   }
 
+  trait NeedsLogger {
+    self: Setup =>
+
+    val mockLogger  = mock[LambdaLogger]
+    when(mockContext.getLogger).thenReturn(mockLogger)
+    doNothing.when(mockLogger).log(*[String])
+  }
+
   "Proxied request handler" should {
-    "return response from the handleInput method" in new Setup {
+    "return response from the handleInput method" in new Setup with NeedsLogger {
       val result: Either[Nothing, String] = proxiedRequestHandler.handle(validInput, mockContext)
 
       result.isRight shouldEqual true
-      val Right(responseEvent) = result
+      val responseEvent = result.value
       val response: APIGatewayProxyResponseEvent = fromJson[APIGatewayProxyResponseEvent](responseEvent)
       response.getStatusCode shouldEqual expectedStatusCode
       response.getBody shouldEqual expectedResponseBody
@@ -68,17 +77,17 @@ class ProxiedRequestHandlerSpec extends WordSpecLike with Matchers with MockitoS
       val result: Either[Nothing, String] = proxiedRequestHandler.handle(invalidInput, mockContext)
 
       result.isRight shouldEqual true
-      val Right(responseEvent) = result
+      val responseEvent = result.value
       val response: APIGatewayProxyResponseEvent = fromJson[APIGatewayProxyResponseEvent](responseEvent)
       response.getStatusCode shouldEqual HTTP_BAD_REQUEST
       response.getBody should include ("No content to map due to end-of-input")
     }
 
-    "return error response from the handleInput method if something goes wrong" in new Setup {
+    "return error response from the handleInput method if something goes wrong" in new Setup with NeedsLogger {
       val result: Either[Nothing, String] = failingProxiedRequestHandler.handle(validInput, mockContext)
 
       result.isRight shouldEqual true
-      val Right(responseEvent) = result
+      val responseEvent = result.value
       val response: APIGatewayProxyResponseEvent = fromJson[APIGatewayProxyResponseEvent](responseEvent)
       response.getStatusCode shouldEqual HTTP_INTERNAL_ERROR
       response.getBody shouldEqual expectedErrorMessage
